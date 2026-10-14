@@ -1,7 +1,7 @@
 # Text Assistant
 
 ## Run & test
-Open `TextAssistant.xcodeproj`, wait for package resolution, pick the **TextAssistant** scheme and any iOS 17+ simulator. On first build, Xcode asks to **Trust & Enable** the TCA macros. ⌘R runs the app, ⌘U runs the tests.
+Open `TextAssistant.xcodeproj`, choose an iOS 17+ simulator, then ⌘R to run or ⌘U to test. On first build, **Trust & Enable** the TCA macros.
 
 ```bash
 xcodebuild test -project TextAssistant.xcodeproj -scheme TextAssistant -skipMacroValidation \
@@ -16,7 +16,7 @@ xcodebuild test -project TextAssistant.xcodeproj -scheme TextAssistant -skipMacr
 ~3 hours
 
 ## Operation lifecycle
-The reducer starts the request as an effect and the `Store` runs it, so the operation is owned by the store, not the view. The app keeps one store for the screen's lifetime. If a parent feature presented this screen (`@Presents`/`ifLet`), dismissing it would cancel its effects automatically.
+The reducer starts the request as an effect that the `Store`, not the view, owns and runs. The app keeps one store for the screen's lifetime. If a parent feature presented this screen (`@Presents`/`ifLet`), dismissing it would cancel its effects automatically.
 
 ## Late results
 Every response carries its request ID, and the reducer applies it only if it matches `activeRequestID`, so responses from replaced or cancelled requests never change state.
@@ -35,4 +35,4 @@ I cancel the previous effect synchronously in the reducer instead of using `canc
 - **Errors:** stable codes instead of message matching: `FlutterError(code: "unavailable" | "invalid_input" | "internal", message: <user-facing text>, details: {requestId, retryable})`. Cancellation is a status, not an error, so Dart never shows it.
 
 ## AI usage
-I used Claude Code to scaffold the Xcode project, port the screen to TCA, draft this README and review concurrency edge cases. I verified the output by reading every line, running the tests on iOS 17.5 and 26.2 simulators, temporarily removing the request-ID check and the cancellation to confirm the tests fail, and stress-running the four verification flows against the real fake service. That stress run is how the `cancelInFlight` race was found.
+I used Claude Code to scaffold the Xcode project, port the screen to TCA, draft this README and review concurrency edge cases. I verified its output by reading every line, running the tests on iOS 17.5 and 26.2, temporarily removing the request-ID check and the cancellation to confirm the tests fail, and stress-running the four verification flows against the real fake service, which is how the `cancelInFlight` race was found.
